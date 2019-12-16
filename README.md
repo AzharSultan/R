@@ -22,7 +22,8 @@ Major categories in the dataset include:
 
 ## Q2. a
 A huge number of participants have age given as 80. This may indicate that 80 was used as a cutoff and age above 80 is coded as 80 as well.
-![Age distribution](logo)
+
+![Age distribution](age_hist.png)
 
 This can be resolved by coding lower ages into categories as well
 ```R
@@ -36,7 +37,8 @@ detach(mydata)
 plot(mydata$agecat)
 attach(mydata)
 ```
-![Categorized Age Distribution](logo2.png)
+
+![Categorized Age Distribution](age_plot.png)
 
 ## Q2. b
 ```R
@@ -51,11 +53,12 @@ attach(mydata)
 hist(srhgnrl)
 median(srhgnrl,na.rm=T)
 ```
-
+![Self Rated Health](self-rated-health.png)
 ## Q3. a
 ```R
 hist(mydata$diab_lft)
 ```
+
 ![Diabetes Distribution](diab_lft.png)
 
 In the dataset, dieabetes is coded as None, Prediabetes and Diabetes. Since there are very few samples for prediabetes, it is merged into diabetes category.
@@ -112,7 +115,9 @@ attach(mydata)
 xt <- xtabs(~srhgnrl+hrsworked_prvwk,data = mydata)
 mosaicplot(xt,main = NA)
 ```
-![Mosaic Plot]()
+
+![Mosaic Plot](4_C_mosaic_plot.png)
+
 Looking at the plot, the two variables seem to be independent of each other
 
 ## Q4. d
@@ -126,8 +131,8 @@ p-value is 0.517, which is greater than 0.05. Null hypothesis that self-rated he
 hist(hg[male])
 hist(hg[!male])
 ```
-![Mercury Level in Men]()
-![Mercury Level in Women]()
+![Mercury Level in Men](5_A_2.png)
+![Mercury Level in Women](5_A.png)
 
 ## Q5. b
 Using t-test:
