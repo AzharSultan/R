@@ -80,6 +80,7 @@ pbar + c(-E, E)
 At 95% confidence level, 11.9-13.8% of people have diabetes and the margin of error is 0.9%.
 
 ## Q3. b
+Using chisquare test:
 ```R
 xt <- xtabs(~diab_lft+ethnic,data = mydata)
 chisq.test(xt)
@@ -89,71 +90,69 @@ chisq.test(xt)
 Results: p-value (7.296e-08) is much less than 0.05. 
 This means diabetes has a strong correlation with ethnicity
 
-## ------------------------------------------------------------------------
-#4. A
-## ------------------------------------------------------------------------
+## Q4. a
+```R
 mydata$hrsworked_prvwk[hrsworked_prvwk==77777] <- NA
 mydata$hrsworked_prvwk[hrsworked_prvwk==99999] <- NA
 detach(mydata)
 attach(mydata)
+```
 
-## ------------------------------------------------------------------------
-#4. B
-## ------------------------------------------------------------------------
+## Q4. b
+```R
 mydata$hrsworked_prvwk[hrsworked_prvwk<40] <- '< 40'
 mydata$hrsworked_prvwk[hrsworked_prvwk>=40] <- '>= 40'
+mydata$hrsworked_prvwk <- as.factor(mydata$hrsworked_prvwk)
 detach(mydata)
 attach(mydata)
+```
 
-## ------------------------------------------------------------------------
-#4. C
-## ------------------------------------------------------------------------
+## Q4. c
+```R
 xt <- xtabs(~srhgnrl+hrsworked_prvwk,data = mydata)
 mosaicplot(xt,main = NA)
-# the two variables seem to be independent of each other
+```
+![Mosaic Plot]()
+Looking at the plot, the two variables seem to be independent of each other
 
-## ------------------------------------------------------------------------
-#4. D
-## ------------------------------------------------------------------------
+## Q4. d
+```R
 chisq.test(xt)
-# p-value (0.517) is greater than 0.05
-# Null hypothesis that self-rated health and hours worked per week are independent is not rejected
+```
+p-value is 0.517, which is greater than 0.05. Null hypothesis that self-rated health and hours worked per week are independent is not rejected
 
-
-## ------------------------------------------------------------------------
-#5. A
-## ------------------------------------------------------------------------
+## Q5. a
+```R
 hist(hg[male])
 hist(hg[!male])
+```
+![Mercury Level in Men]()
+![Mercury Level in Women]()
 
-## ------------------------------------------------------------------------
-#5. B
-## ------------------------------------------------------------------------
-t.test(hg~male)
-#Welch Two Sample t-test#
+## Q5. b
+Using t-test:
+```R
+xt <- xtabs(~hg+male, data=mydata)
+chisq.test(xt)
+
+#	Pearson's Chi-squared test
 #
-#data:  hg by male
-#t = -1.9133, df = 4386, p-value = 0.05577
-#alternative hypothesis: true difference in means is not equal to 0
-#95 percent confidence interval:
-#  -1.56900937  0.01910137
-#sample estimates:
-#  mean in group FALSE  mean in group TRUE 
-#8.067284            8.842238 
-# null hypothesis is not rejected
-
+#data:  xt
+#X-squared = 437.57, df = 447, p-value = 0.6161
+```
+p-value is 0.6161, which is greater than 0.05. so the relation between blood mercury level and gender is not significant. Testing the same with non-parametric test:
+```R
 wilcox.test(hg~male)
 #Wilcoxon rank sum test with continuity correction
 #
 #data:  hg by male
 #W = 2551800, p-value = 0.7813
 #alternative hypothesis: true location shift is not equal to 0
+```
+p-value is 0.7813
 
-# Null hypothesis is not rejected
-
-## ------------------------------------------------------------------------
-#6. A
-## ------------------------------------------------------------------------
+## Q6. a
+```R
 summary(lm(hdl~bmi))
 # Call:
 #   lm(formula = hdl ~ bmi)
@@ -173,15 +172,13 @@ summary(lm(hdl~bmi))
 # (634 observations deleted due to missingness)
 # Multiple R-squared:  0.07721,	Adjusted R-squared:  0.077 
 # F-statistic: 365.2 on 1 and 4364 DF,  p-value: < 2.2e-16
+```
+
+p-value shows that relationship is highly significant. looking at R-squared value (0.077), it seems that model is not fitting well. This means that alot of variation in mercury level is not explained bz bmi
 
 
-# p-value shows that relationship is highly significant
-# each unit increase in bmi, hdl is obsered to decrease by ~0.015 
-
-
-## ------------------------------------------------------------------------
-#6. B
-## ------------------------------------------------------------------------
+## Q6. b
+```R
 center_bmi = bmi-mean(bmi,na.rm = T)
 summary(lm(hdl~center_bmi+agecat))
 # Call:
@@ -206,16 +203,12 @@ summary(lm(hdl~center_bmi+agecat))
 # (634 observations deleted due to missingness)
 # Multiple R-squared:  0.08583,	Adjusted R-squared:  0.08478 
 # F-statistic: 81.87 on 5 and 4360 DF,  p-value: < 2.2e-16
-
-# even after adjusting for age, bmi has a significant relevance to hdl
-# each unit increase in bmi, hdl is obsered to decrease by ~0.015 
-# intercept states the mean value of hdl for the mean value of bmi (when ignoring age adjustment)
+```
+Even after adjusting for age, bmi has a significant relevance to hdl, althouth the coefficient changes a bit. For each unit increase in bmi, hdl is obsered to decrease by ~0.015. Intercept indicates the mean value of hdl for the mean value of bmi (when ignoring age adjustment).
 
 
-## ------------------------------------------------------------------------
-#7. A
-## ------------------------------------------------------------------------
-
+## Q7. a
+```R
 n = length(cancer_ever[!is.na(cancer_ever)])
 k = sum(cancer_ever,na.rm = T)
 pbar = k/n
@@ -224,13 +217,12 @@ E = qnorm(.975) * SE; E              # margin of error
 # 0.008068046
 pbar + c(-E, E) 
 # 0.07984404 0.09598013
-# At 95% confidence level, between 8% and 9.6% of people are diagnosed with cancer during their life,
-# and the margin of error is 0.8%.
+```
 
-## ------------------------------------------------------------------------
-#7. B
-## ------------------------------------------------------------------------
+At 95% confidence level, 8-9.6% of people are diagnosed with cancer during their life and the margin of error is 0.8%.
 
+## Q7. b
+```R
 cancer_workpolut = cancer_ever[workpollut&!is.na(workpollut)]
 n = length(cancer_workpolut[!is.na(cancer_workpolut)])
 pbar = mean(cancer_workpolut,na.rm = T)
@@ -239,9 +231,10 @@ E = qnorm(.975) * SE; E              # margin of error
 # 0.008068046
 pbar + c(-E, E) 
 # 0.06450430 0.08684203
-# At 95% CI, 6.5-8.7% of people exposed to polutants at work are diagnosed with cancer during their life,
-# and the margin of error is 1.1%.
+```
+At 95% CI, 6.5-8.7% of people exposed to polutants at work are diagnosed with cancer during their life and the margin of error is 1.1%.
 
+```R
 cancer_noworkpolut = cancer_ever[!workpollut&!is.na(workpollut)]
 n = length(cancer_noworkpolut[!is.na(cancer_noworkpolut)])
 pbar = mean(cancer_noworkpolut,na.rm = T)
@@ -250,32 +243,30 @@ E = qnorm(.975) * SE; E              # margin of error
 # 0.008068046
 pbar + c(-E, E) 
 # 0.05768499 0.07963723
-# At 95% CI, 5.8-8% of people not exposed to polutants at work are diagnosed with cancer during their life,
-# and the margin of error is 1.1%.
+```
+At 95% CI, 5.8-8% of people not exposed to polutants at work are diagnosed with cancer during their life and the margin of error is 1.1%. 
 
-# since CI of the means of two groups overlap, the difference is not significant. 
-# it can be further proved using chisqq test
-
+Since CI of the means of two groups overlap, the difference is not significant. It can be further proved using chisqq test
+```R
 xt <- xtabs(~workpollut+cancer_ever,data = mydata)
 chisq.test(xt)
 # Pearson's Chi-squared test with Yates' continuity correction
 # 
 # data:  xt
 # X-squared = 0.66719, df = 1, p-value = 0.414
+```
+p-value is greater than 0.414. so the difference in cancer prevalence between the two groups is not significant
 
-# p-value is greater than 0.414. so the difference is not significant
-
-## ------------------------------------------------------------------------
-#7. C
-## ------------------------------------------------------------------------
-summary(lm(cancer_ever~workpollut+agecat))
+## Q7. c
+```R
+summary(glm(cancer_ever~workpollut+agecat))
 
 # Call:
-#   lm(formula = cancer_ever ~ workpollut + agecat)
+#   glm(formula = cancer_ever ~ workpollut + agecat)
 # 
-# Residuals:
-#   Min       1Q   Median       3Q      Max 
-# -0.20132 -0.09401 -0.03940 -0.01437  0.99232 
+# Deviance Residuals: 
+#   Min        1Q    Median        3Q       Max  
+# -0.20132  -0.09401  -0.03940  -0.01437   0.99232  
 # 
 # Coefficients:
 #   Estimate Std. Error t value Pr(>|t|)    
@@ -285,9 +276,14 @@ summary(lm(cancer_ever~workpollut+agecat))
 #   agecat50-64    0.079638   0.010299   7.733 1.31e-14 ***
 #   agecat65-79    0.186950   0.011916  15.689  < 2e-16 ***
 #   ---
-#   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # 
-# Residual standard error: 0.2509 on 4188 degrees of freedom
+# (Dispersion parameter for gaussian family taken to be 0.06292746)
+# 
+# Null deviance: 281.10  on 4192  degrees of freedom
+# Residual deviance: 263.54  on 4188  degrees of freedom
 # (807 observations deleted due to missingness)
-# Multiple R-squared:  0.06248,	Adjusted R-squared:  0.06159 
-# F-statistic: 69.78 on 4 and 4188 DF,  p-value: < 2.2e-16
+# AIC: 309.33
+# 
+# Number of Fisher Scoring iterations: 2
+```
